@@ -195,3 +195,6 @@ LOGGING = {
         },
     }
 }
+
+#设置自定义的模型类认证
+AUTH_USER_MODEL = "users.User"
