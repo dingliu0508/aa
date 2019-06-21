@@ -29,6 +29,10 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+#1,告诉系统,apps作为导包路径
+import sys
+sys.path.insert(0,os.path.join(BASE_DIR,"apps"))
+# print(sys.path)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users.apps.UsersConfig', #该导包方式,可以解决模型类不被admin关联的问题
 ]
 
 MIDDLEWARE = [
