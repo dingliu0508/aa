@@ -53,10 +53,11 @@ ROOT_URLCONF = 'meiduo_mall.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'BACKEND': 'django.template.backends.jinja2.Jinja2', #jinja2模板
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
+            'environment':'meiduo_mall.utils.my_jinja2.environment',
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
