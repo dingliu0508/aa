@@ -122,7 +122,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+#静态文件夹的配置
+STATIC_URL = '/static/' #静态文件的访问路径
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'static'), #静态文件夹的位置
+]
 
 #redis配置
 CACHES = {
