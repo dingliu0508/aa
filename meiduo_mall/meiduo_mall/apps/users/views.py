@@ -4,6 +4,7 @@ from django import http
 import re
 from .models import User
 
+#1,注册用户
 class UserRegiserView(View):
     def get(self,request):
         return render(request,'register.html')
@@ -50,3 +51,21 @@ class UserRegiserView(View):
 
         #4,返回响应
         return redirect('http://www.taobao.com')
+
+#2,检查用户名
+class CheckUsernameView(View):
+    def get(self,request,username):
+        #1,根据用户名,查询用户数量
+        count = User.objects.filter(username=username).count()
+
+        #2,返回响应
+        return http.JsonResponse({"count":count})
+
+#3,检查手机号是否存在
+class CheckPhoneView(View):
+    def get(self,request,mobile):
+        #1,根据手机号,查询用户数量
+        count = User.objects.filter(mobile=mobile).count()
+
+        #2,返回响应
+        return http.JsonResponse({"count":count})
