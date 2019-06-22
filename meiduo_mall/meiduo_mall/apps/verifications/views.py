@@ -6,6 +6,8 @@ from django_redis import get_redis_connection
 import random
 #1,生成图片验证码
 from meiduo_mall.libs.yuntongxun.sms import CCP
+from meiduo_mall.utils.response_code import RET
+from verifications import constants
 
 
 class ImageCodeView(View):
@@ -16,7 +18,7 @@ class ImageCodeView(View):
         #2,保存图片验证码到redis中
         redis_conn = get_redis_connection("code")
         #参数1: 保存到redis键,  参数2: 有效期,  参数3: 值
-        redis_conn.setex("img_code_%s"%image_code_id,300,text)
+        redis_conn.setex("img_code_%s"%image_code_id,constants.REDIS_IMAGE_CODE_EXPIRES,text)
 
         #3,返回图片验证码
         return http.HttpResponse(image_data,content_type="image/png")
@@ -31,7 +33,7 @@ class SmsCodeView(View):
         #2,校验参数
         #2,1 为空校验
         if not all([image_code,image_code_id]):
-            return http.JsonResponse({"code":4001,"errmsg":"参数不完整"})
+            return http.JsonResponse({"code":RET.PARAMERR,"errmsg":"参数不完整"})
 
         #2,2 获取redis中的图片验证码,校验为空
         redis_conn = get_redis_connection("code")
@@ -39,26 +41,27 @@ class SmsCodeView(View):
 
         #判断是否过期
         if not redis_image_code:
-            return http.JsonResponse({"code": 4001, "errmsg": "图片验证码过期"})
+            return http.JsonResponse({"code": RET.NODATA, "errmsg": "图片验证码过期"})
 
         #删除redis验证码
         redis_conn.delete("img_code_%s"%image_code_id)
 
         #2,3 图片验证码正确性
-        if image_code != redis_image_code.decode():
-            return http.JsonResponse({"code": 4001, "errmsg": "图片验证码错误"})
+        if image_code.lower() != redis_image_code.decode().lower():
+            return http.JsonResponse({"code": RET.DATAERR, "errmsg": "图片验证码错误"})
 
         #3,发送短信,并判断是否发送成功
         sms_code = "%06d"%random.randint(0,999999)
-        ccp = CCP()
-        result = ccp.send_template_sms(mobile, [sms_code, 5], 1)
-
-        #判断是否发送成功
-        if result == -1:
-            return http.JsonResponse({"code": 4001, "errmsg": "短信发送失败"})
+        print("sms_code = %s"%sms_code)
+        # ccp = CCP()
+        # result = ccp.send_template_sms(mobile, [sms_code, constants.REDIS_SMS_CODE_EXPIRES/60], 1)
+        #
+        # #判断是否发送成功
+        # if result == -1:
+        #     return http.JsonResponse({"code": RET.THIRDERR, "errmsg": "短信发送失败"})
 
         #保存短信验证到redis
-        redis_conn.setex("sms_code_%s"%mobile,300,sms_code)
+        redis_conn.setex("sms_code_%s"%mobile,constants.REDIS_SMS_CODE_EXPIRES,sms_code)
 
         #4,返回响应
-        return http.JsonResponse({"code":'0',"errmsg":"ok"})
+        return http.JsonResponse({"code":RET.OK,"errmsg":"ok"})
