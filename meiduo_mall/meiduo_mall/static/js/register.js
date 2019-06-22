@@ -19,7 +19,7 @@ var vm = new Vue({
         error_sms_code_message: '请填写短信验证码',
         error_allow_message: '请勾选用户协议',
         image_code_id: '',
-        image_code_url: '',
+        image_code_url: 'http://pic13.nipic.com/20110409/7119492_114440620000_2.jpg',
         sms_code_tip: '获取短信验证码',
         sending_flag: false,
         username: '',
