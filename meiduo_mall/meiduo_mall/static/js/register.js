@@ -214,12 +214,12 @@ var vm = new Vue({
         },
         // 表单提交
         on_submit(){
-            // this.check_username();
-            // this.check_pwd();
-            // this.check_cpwd();
-            // this.check_phone();
-            // this.check_sms_code();
-            // this.check_allow();
+            this.check_username();
+            this.check_pwd();
+            this.check_cpwd();
+            this.check_phone();
+            this.check_sms_code();
+            this.check_allow();
 
             if (this.error_name == true || this.error_password == true || this.error_check_password == true
                 || this.error_phone == true || this.error_sms_code == true || this.error_allow == true) {
