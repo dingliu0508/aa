@@ -80,3 +80,8 @@ class CheckPhoneView(View):
 
         #2,返回响应
         return http.JsonResponse({"count":count})
+
+#4,处理登陆业务
+class UserLoginView(View):
+    def get(self,request):
+        return render(request,'login.html')
