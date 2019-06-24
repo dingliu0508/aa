@@ -121,4 +121,6 @@ class UserLoginView(View):
             request.session.set_expiry(0)
 
         #4,返回响应
-        return redirect("/")
+        response = redirect("/")
+        response.set_cookie("username",user.username,max_age=3600*24*2)
+        return response
