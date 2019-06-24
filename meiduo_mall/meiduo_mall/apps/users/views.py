@@ -4,7 +4,7 @@ from django import http
 import re
 from .models import User
 from django_redis import get_redis_connection
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 
 #1,注册用户
 class UserRegiserView(View):
@@ -113,6 +113,12 @@ class UserLoginView(View):
             return http.HttpResponseForbidden("用户名或者密码错误")
 
         #3,状态保持
+        login(request, user) #记录用户信息到session
+
+        if remembered == 'on':
+            request.session.set_expiry(3600*24*2) #两天有效
+        else:
+            request.session.set_expiry(0)
 
         #4,返回响应
         return redirect("/")
