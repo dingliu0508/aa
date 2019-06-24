@@ -58,6 +58,7 @@
                         <input type="text" name="msg_code" id="msg_code" class="msg_input" v-model="sms_code" @blur="check_sms_code">
                         <a href="javascript:;" class="get_msg_code" @click="send_sms_code">[[sms_code_tip]]</a>
                         <span class="error_tip" v-show="error_sms_code">[[ error_sms_code_message ]]</span>
+                        <span class="error_tip" v-show="is_errmsg">[[ errmsg ]]</span>
                     </li>
                     <li class="agreement">
                         <input type="checkbox" name="allow" id="allow" checked="checked" v-model="allow">

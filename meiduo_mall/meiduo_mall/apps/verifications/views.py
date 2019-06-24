@@ -9,7 +9,7 @@ from meiduo_mall.libs.yuntongxun.sms import CCP
 from meiduo_mall.utils.response_code import RET
 from verifications import constants
 
-
+#1,图片验证码
 class ImageCodeView(View):
     def get(self,request,image_code_id):
         #1,生成图片验证码
@@ -50,6 +50,11 @@ class SmsCodeView(View):
         if image_code.lower() != redis_image_code.decode().lower():
             return http.JsonResponse({"code": RET.DATAERR, "errmsg": "图片验证码错误"})
 
+        #获取短信验证码标记
+        send_flag = redis_conn.get("send_flag_%s"%mobile)
+        if send_flag:
+            return http.JsonResponse({"code":RET.DATAERR,"errmsg":"短信发送频繁"},status=400)
+
         #3,发送短信,并判断是否发送成功
         sms_code = "%06d"%random.randint(0,999999)
         print("sms_code = %s"%sms_code)
@@ -62,6 +67,7 @@ class SmsCodeView(View):
 
         #保存短信验证到redis
         redis_conn.setex("sms_code_%s"%mobile,constants.REDIS_SMS_CODE_EXPIRES,sms_code)
+        redis_conn.setex("send_flag_%s"%mobile,60,True)
 
         #4,返回响应
         return http.JsonResponse({"code":RET.OK,"errmsg":"ok"})

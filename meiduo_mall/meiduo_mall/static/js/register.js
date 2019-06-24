@@ -28,7 +28,11 @@ var vm = new Vue({
         mobile: '',
         image_code: '',
         sms_code: '',
-        allow: true
+        allow: true,
+
+        errmsg:"",
+        is_errmsg:false,
+
     },
     mounted: function () {
         // 向服务器获取图片验证码
@@ -176,6 +180,7 @@ var vm = new Vue({
                 responseType: 'json'
             })
                 .then(response => {
+                    this.is_errmsg = false;
                     // 表示后端发送短信成功
                     if (response.data.code == '0') {
                         // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
@@ -210,6 +215,10 @@ var vm = new Vue({
                 .catch(error => {
                     console.log(error.response);
                     this.sending_flag = false;
+
+                    //记录错误信息
+                    this.errmsg = error.response.data.errmsg;
+                    this.is_errmsg = true;
                 })
         },
         // 表单提交
