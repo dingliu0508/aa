@@ -37,6 +37,7 @@ class SmsCodeView(View):
 
         #2,2 获取redis中的图片验证码,校验为空
         redis_conn = get_redis_connection("code")
+        pipeline = redis_conn.pipeline() #开启管道(事务)
         redis_image_code = redis_conn.get("img_code_%s"%image_code_id)
 
         #判断是否过期
@@ -44,7 +45,7 @@ class SmsCodeView(View):
             return http.JsonResponse({"code": RET.NODATA, "errmsg": "图片验证码过期"})
 
         #删除redis验证码
-        redis_conn.delete("img_code_%s"%image_code_id)
+        pipeline.delete("img_code_%s"%image_code_id)
 
         #2,3 图片验证码正确性
         if image_code.lower() != redis_image_code.decode().lower():
@@ -65,9 +66,16 @@ class SmsCodeView(View):
         # if result == -1:
         #     return http.JsonResponse({"code": RET.THIRDERR, "errmsg": "短信发送失败"})
 
+        #测试短信发送
+        import time
+        time.sleep(10)
+
+
         #保存短信验证到redis
-        redis_conn.setex("sms_code_%s"%mobile,constants.REDIS_SMS_CODE_EXPIRES,sms_code)
-        redis_conn.setex("send_flag_%s"%mobile,60,True)
+        pipeline.setex("sms_code_%s"%mobile,constants.REDIS_SMS_CODE_EXPIRES,sms_code)
+        pipeline.setex("send_flag_%s"%mobile,60,True)
+
+        pipeline.execute()#提交管道(事务)
 
         #4,返回响应
         return http.JsonResponse({"code":RET.OK,"errmsg":"ok"})
