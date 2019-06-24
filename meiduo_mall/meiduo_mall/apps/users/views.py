@@ -4,6 +4,8 @@ from django import http
 import re
 from .models import User
 from django_redis import get_redis_connection
+from django.contrib.auth import authenticate
+
 #1,注册用户
 class UserRegiserView(View):
     def get(self,request):
@@ -85,3 +87,32 @@ class CheckPhoneView(View):
 class UserLoginView(View):
     def get(self,request):
         return render(request,'login.html')
+
+    def post(self,request):
+        #1,获取参数
+        username = request.POST.get("username")
+        password = request.POST.get("pwd")
+        remembered = request.POST.get("remembered")
+
+        #2,校验参数
+        #2,1为空校验
+        if not all([username,password]):
+            return http.HttpResponseForbidden("参数不全")
+
+        #2,2用户名格式校验
+        if not re.match(r'^[a-zA-Z0-9_-]{5,20}$',username):
+            return http.HttpResponseForbidden("用户名格式错误")
+
+        #2,3密码格式校验
+        if not re.match(r'^[0-9A-Za-z]{8,20}$',password):
+            return http.HttpResponseForbidden("用户密码错误")
+
+        #2,3校验账号,密码正确性(认证),并判断是否认证成功
+        user = authenticate(request, username=username, password=password)
+        if not user:
+            return http.HttpResponseForbidden("用户名或者密码错误")
+
+        #3,状态保持
+
+        #4,返回响应
+        return redirect("/")
