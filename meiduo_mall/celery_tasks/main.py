@@ -13,12 +13,12 @@ app = Celery('meiduo')
 app.config_from_object('celery_tasks.config')
 
 #5,注册任务
-app.autodiscover_tasks()
+app.autodiscover_tasks(['celery_tasks.test.tasks'])
 
 #6,装饰任务
-@app.task(bind=True)
-def hello_world(self):
-    import time
-    for i in range(0,10):
-        time.sleep(1)
-        print("i = %s"%i)
+# @app.task(bind=True)
+# def hello_world(self):
+#     import time
+#     for i in range(0,10):
+#         time.sleep(1)
+#         print("i = %s"%i)
