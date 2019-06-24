@@ -205,3 +205,6 @@ LOGGING = {
 
 #设置自定义的模型类认证
 AUTH_USER_MODEL = "users.User"
+
+#使用自定义的认证类
+AUTHENTICATION_BACKENDS = ['meiduo_mall.utils.my_authenticate.MyModelBackend']
