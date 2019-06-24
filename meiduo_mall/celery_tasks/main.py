@@ -13,7 +13,7 @@ app = Celery('meiduo')
 app.config_from_object('celery_tasks.config')
 
 #5,注册任务
-app.autodiscover_tasks(['celery_tasks.test.tasks'])
+app.autodiscover_tasks(['celery_tasks.test.tasks','celery_tasks.sms.tasks'])
 
 #6,装饰任务
 # @app.task(bind=True)

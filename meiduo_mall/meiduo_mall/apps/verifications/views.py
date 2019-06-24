@@ -66,10 +66,13 @@ class SmsCodeView(View):
         # if result == -1:
         #     return http.JsonResponse({"code": RET.THIRDERR, "errmsg": "短信发送失败"})
 
-        #测试短信发送
-        import time
-        time.sleep(10)
+        #使用celery发送短信
+        from celery_tasks.sms.tasks import send_sms_code
+        send_sms_code.delay(mobile,sms_code,constants.REDIS_SMS_CODE_EXPIRES/60)
 
+        #测试短信发送
+        # import time
+        # time.sleep(10)
 
         #保存短信验证到redis
         pipeline.setex("sms_code_%s"%mobile,constants.REDIS_SMS_CODE_EXPIRES,sms_code)
