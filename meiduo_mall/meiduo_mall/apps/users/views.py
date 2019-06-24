@@ -3,7 +3,7 @@ from django.views import View
 from django import http
 import re
 from .models import User
-
+from django_redis import get_redis_connection
 #1,注册用户
 class UserRegiserView(View):
     def get(self,request):
@@ -41,6 +41,17 @@ class UserRegiserView(View):
             return http.HttpResponseBadRequest("手机号格式有误")
 
         #2,6 校验短信验证码
+        redis_conn = get_redis_connection("code")
+        redis_sms_code = redis_conn.get("sms_code_%s"%phone)
+
+        #判断是否过期
+        if not redis_sms_code:
+            return http.HttpResponseForbidden("短信验证码已过期")
+
+        #正确性校验
+        if msg_code != redis_sms_code.decode():
+            return http.HttpResponseForbidden("短信验证码错误")
+
 
         #2,7 校验协议
         if allow != 'on':
