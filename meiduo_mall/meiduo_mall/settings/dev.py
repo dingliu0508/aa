@@ -25,7 +25,8 @@ SECRET_KEY = 'l64s%9^6==!lff)r2cwum=a#22d8qo6b3pg^kz)n2y1qz2^-z+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#允许访问的域名
+ALLOWED_HOSTS = ['www.meiduo.site','127.0.0.1']
 
 
 # Application definition
