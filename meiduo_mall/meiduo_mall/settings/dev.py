@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig', #该导包方式,可以解决模型类不被admin关联的问题
+    'oauth.apps.OauthConfig'
 ]
 
 MIDDLEWARE = [
@@ -211,3 +212,8 @@ AUTHENTICATION_BACKENDS = ['meiduo_mall.utils.my_authenticate.MyModelBackend']
 
 #未登录,来这里
 # LOGIN_URL = '/login'
+
+#qq登陆参数
+QQ_CLIENT_ID = '101518219'
+QQ_CLIENT_SECRET = '418d84ebdc7241efb79536886ae95224'
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8000/oauth_callback'
