@@ -135,3 +135,8 @@ class UserLogoutView(View):
         response = redirect('/')
         response.delete_cookie("username")
         return response
+
+#6,个人中心
+class UserCenterInfoView(View):
+    def get(self,request):
+        return render(request,'user_center_info.html')
