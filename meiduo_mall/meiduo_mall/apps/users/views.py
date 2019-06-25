@@ -6,7 +6,7 @@ from .models import User
 from django_redis import get_redis_connection
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from meiduo_mall.utils.login_required import MyLoginRequiredview
 
 #1,注册用户
 class UserRegiserView(View):
@@ -139,10 +139,7 @@ class UserLogoutView(View):
         return response
 
 #6,个人中心
-class UserCenterInfoView(LoginRequiredMixin,View):
-    login_url = "/login" #未登录,重定向的路径
-    redirect_field_name = "next" #跳转的引用
-
+class UserCenterInfoView(MyLoginRequiredview):
     def get(self,request):
         #1,判断用户登陆状态
         # if request.user.is_authenticated:
