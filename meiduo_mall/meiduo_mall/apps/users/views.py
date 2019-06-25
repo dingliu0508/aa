@@ -5,6 +5,8 @@ import re
 from .models import User
 from django_redis import get_redis_connection
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 #1,注册用户
 class UserRegiserView(View):
@@ -137,6 +139,15 @@ class UserLogoutView(View):
         return response
 
 #6,个人中心
-class UserCenterInfoView(View):
+class UserCenterInfoView(LoginRequiredMixin,View):
+    login_url = "/login" #未登录,重定向的路径
+    redirect_field_name = "next" #跳转的引用
+
     def get(self,request):
-        return render(request,'user_center_info.html')
+        #1,判断用户登陆状态
+        # if request.user.is_authenticated:
+        #     return render(request,'user_center_info.html')
+        # else:
+        #     return redirect('/')
+
+        return render(request, 'user_center_info.html')

@@ -208,3 +208,6 @@ AUTH_USER_MODEL = "users.User"
 
 #使用自定义的认证类
 AUTHENTICATION_BACKENDS = ['meiduo_mall.utils.my_authenticate.MyModelBackend']
+
+#未登录,来这里
+# LOGIN_URL = '/login'
