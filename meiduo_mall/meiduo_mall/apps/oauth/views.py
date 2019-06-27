@@ -23,7 +23,6 @@ class QQLoginView(View):
         #4,返回响应
         return http.JsonResponse({"login_url":login_url})
 
-
 #2,绑定qq用户和美多用户
 class QQAuthUserView(View):
     def get(self,request):
