@@ -210,3 +210,8 @@ class EmailView(MyLoginRequiredview):
 
         #4,返回响应
         return redirect('/info')
+
+#8,渲染用户的收货地址
+class UserAddressView(View):
+    def get(self,request):
+        return render(request,'user_center_site.html')

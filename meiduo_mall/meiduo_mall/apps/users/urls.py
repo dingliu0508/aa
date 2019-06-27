@@ -12,4 +12,5 @@ urlpatterns = [
     # url(r'^info/$',login_required(views.UserCenterInfoView.as_view())),
     url(r'^emails/$',views.EmailView.as_view()),
     url(r'^emails/verification/$',views.EmailView.as_view()),
+    url(r'^addresses/$',views.UserAddressView.as_view()),
 ]
