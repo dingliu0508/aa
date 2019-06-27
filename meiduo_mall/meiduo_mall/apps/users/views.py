@@ -2,11 +2,16 @@ from django.shortcuts import render,redirect
 from django.views import View
 from django import http
 import re
+
+from meiduo_mall.utils.response_code import RET
 from .models import User
 from django_redis import get_redis_connection
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from meiduo_mall.utils.login_required import MyLoginRequiredview
+import json
+from django.core.mail import send_mail
+from django.conf import settings
 
 #1,注册用户
 class UserRegiserView(View):
@@ -151,3 +156,26 @@ class UserCenterInfoView(MyLoginRequiredview):
 
         #2,携带数据,渲染页面
         return render(request, 'user_center_info.html',context=context)
+
+#7,邮件保存发送
+class EmailView(MyLoginRequiredview):
+    def put(self,request):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        email = dict_data.get("email")
+
+        #2,校验参数,为空校验
+        if not email:
+            return http.HttpResponseForbidden("邮箱不能为空")
+
+        #3,数据入库(发送,入库)
+        send_mail(subject='美多商城,激活链接',
+                  message='今晚小树林,不见不散',
+                  from_email=settings.EMAIL_FROM,
+                  recipient_list=[email])
+
+        request.user.email = email
+        request.user.save()
+
+        #4,返回响应
+        return http.JsonResponse({"code":RET.OK})
