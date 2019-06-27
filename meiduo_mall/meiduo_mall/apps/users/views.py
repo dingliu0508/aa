@@ -174,10 +174,13 @@ class EmailView(MyLoginRequiredview):
         verify_url = generate_verify_url(request.user)
 
         #3,2发送邮件
-        send_mail(subject='美多商城,激活链接',
-                  message=verify_url,
-                  from_email=settings.EMAIL_FROM,
-                  recipient_list=[email])
+        # send_mail(subject='美多商城,激活链接',
+        #           message=verify_url,
+        #           from_email=settings.EMAIL_FROM,
+        #           recipient_list=[email])
+
+        from celery_tasks.email.tasks import send_verify_url
+        send_verify_url.delay(verify_url,email)
 
         #3,3入库
         request.user.email = email
