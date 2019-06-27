@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views import View
 from QQLoginTool.QQtool import OAuthQQ
 from django.conf import settings
 from django import http
+from .models import OAuthQQUser
+from django.contrib.auth import login
 
 #1,获取qq登陆界面
 class QQLoginView(View):
@@ -46,4 +48,20 @@ class QQAuthUserView(View):
         #4,获取openid
         openid = oauth_qq.get_open_id(access_token)
 
-        return http.HttpResponse(openid)
+        #5,通过openid,查询qq授权用户
+        try:
+            oauth_qq_user = OAuthQQUser.objects.get(openid=openid)
+        except Exception as e:
+            #5,1 初次授权
+            pass
+        else:
+            #6,1 非初次授权,获取美多用户
+            user = oauth_qq_user.user
+
+            #6,2 状态保持
+            login(request,user)
+
+            #6,3 返回响应
+            response = redirect("/")
+            response.set_cookie("username",user.username)
+            return response
