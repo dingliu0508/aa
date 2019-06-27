@@ -141,10 +141,13 @@ class UserLogoutView(View):
 #6,个人中心
 class UserCenterInfoView(MyLoginRequiredview):
     def get(self,request):
-        #1,判断用户登陆状态
-        # if request.user.is_authenticated:
-        #     return render(request,'user_center_info.html')
-        # else:
-        #     return redirect('/')
+        #1,获取用户数据, request.user表示当前登录的用户
+        context = {
+            "username":request.user.username,
+            "mobile":request.user.mobile,
+            "email":request.user.email,
+            "email_active":False
+        }
 
-        return render(request, 'user_center_info.html')
+        #2,携带数据,渲染页面
+        return render(request, 'user_center_info.html',context=context)
