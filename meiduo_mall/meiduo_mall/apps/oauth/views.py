@@ -7,6 +7,7 @@ from .models import OAuthQQUser
 from django.contrib.auth import login,authenticate
 from .utils import encode_openid,decode_openid
 from django_redis import get_redis_connection
+from users.models import User
 
 #1,获取qq登陆界面
 class QQLoginView(View):
@@ -104,10 +105,35 @@ class QQAuthUserView(View):
 
         #3,数据入库,判断用户对象
         if user:
-            pass
+            #3,1 创建qq授权对象
+            oauth_qq_user = OAuthQQUser()
+
+            #3,2 关联美多用户和 openid
+            oauth_qq_user.user = user
+            oauth_qq_user.openid = openid
+
+            #3,3 入库
+            oauth_qq_user.save()
+
+            #3,4 状态保持,返回响应
+            login(request,user)
+            response = redirect('/')
+            response.set_cookie("username",user.username)
+            return response
         else:
-            pass
+            #4,1 创建美多用户
+            user = User.objects.create_user(username=mobile,password=password)
 
+            #4,2 创建qq授权对象
+            oauth_qq_user = OAuthQQUser()
 
-        #4,返回响应
-        pass
+            #4,3 关联美多用户和openid,入库
+            oauth_qq_user.user = user
+            oauth_qq_user.openid = openid
+            oauth_qq_user.save()
+
+            #4,4 状态保持,返回响应
+            login(request,user)
+            response = redirect('/')
+            response.set_cookie("username",user.username)
+            return response
