@@ -5,6 +5,7 @@ from django.conf import settings
 from django import http
 from .models import OAuthQQUser
 from django.contrib.auth import login
+from .utils import encode_openid
 
 #1,获取qq登陆界面
 class QQLoginView(View):
@@ -42,8 +43,10 @@ class QQAuthUserView(View):
                 redirect_uri=settings.QQ_REDIRECT_URI,
                 state=state
                 )
-
-        access_token = oauth_qq.get_access_token(code)
+        try:
+            access_token = oauth_qq.get_access_token(code)
+        except Exception:
+            return http.HttpResponseForbidden("code已过期")
 
         #4,获取openid
         openid = oauth_qq.get_open_id(access_token)
@@ -52,8 +55,10 @@ class QQAuthUserView(View):
         try:
             oauth_qq_user = OAuthQQUser.objects.get(openid=openid)
         except Exception as e:
-            #5,1 初次授权
-            pass
+            #5,1 初次授权,加密openid,返回授权页面
+            encrypt_openid = encode_openid(openid)
+            context = {"token":encrypt_openid}
+            return render(request,'oauth_callback.html',context=context)
         else:
             #6,1 非初次授权,获取美多用户
             user = oauth_qq_user.user
