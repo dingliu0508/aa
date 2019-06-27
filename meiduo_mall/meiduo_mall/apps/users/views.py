@@ -3,7 +3,7 @@ from django.views import View
 from django import http
 import re
 
-from meiduo_mall.utils.email import generate_verify_url
+from meiduo_mall.utils.email import generate_verify_url,decode_token
 from meiduo_mall.utils.response_code import RET
 from .models import User
 from django_redis import get_redis_connection
@@ -152,7 +152,7 @@ class UserCenterInfoView(MyLoginRequiredview):
             "username":request.user.username,
             "mobile":request.user.mobile,
             "email":request.user.email,
-            "email_active":False
+            "email_active":request.user.email_active
         }
 
         #2,携带数据,渲染页面
@@ -188,3 +188,25 @@ class EmailView(MyLoginRequiredview):
 
         #4,返回响应
         return http.JsonResponse({"code":RET.OK})
+
+    def get(self,request):
+        #1,获取参数
+        token = request.GET.get("token")
+
+        #2,校验参数
+        #2,1为空校验
+        if not token:
+            return http.HttpResponseForbidden("非法请求")
+
+        #2,2正确性,解密校验
+        user = decode_token(token)
+
+        if not user:
+            return http.HttpResponseForbidden("token失效")
+
+        #3,数据入库
+        user.email_active = True
+        user.save()
+
+        #4,返回响应
+        return redirect('/info')
