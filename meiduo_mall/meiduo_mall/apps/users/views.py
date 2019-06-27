@@ -3,6 +3,7 @@ from django.views import View
 from django import http
 import re
 
+from meiduo_mall.utils.email import generate_verify_url
 from meiduo_mall.utils.response_code import RET
 from .models import User
 from django_redis import get_redis_connection
@@ -169,11 +170,16 @@ class EmailView(MyLoginRequiredview):
             return http.HttpResponseForbidden("邮箱不能为空")
 
         #3,数据入库(发送,入库)
+        #3,1 获取验证链接
+        verify_url = generate_verify_url(request.user)
+
+        #3,2发送邮件
         send_mail(subject='美多商城,激活链接',
-                  message='今晚小树林,不见不散',
+                  message=verify_url,
                   from_email=settings.EMAIL_FROM,
                   recipient_list=[email])
 
+        #3,3入库
         request.user.email = email
         request.user.save()
 
