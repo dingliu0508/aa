@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^addresses/(?P<address_id>\d+)/$',views.UserAddressUpdateView.as_view()),
     url(r'^addresses/(?P<address_id>\d+)/default/$',views.UserAddressDefaultView.as_view()),
     url(r'^addresses/(?P<address_id>\d+)/title/$',views.UserAddressTitleView.as_view()),
+    url(r'^password/$',views.UserRepasswordView.as_view()),
 ]

@@ -383,3 +383,8 @@ class UserAddressTitleView(View):
 
         #4,返回响应
         return http.JsonResponse({"code":RET.OK})
+
+#13,重置密码
+class UserRepasswordView(View):
+    def get(self,request):
+        return render(request,'user_center_pass.html')
