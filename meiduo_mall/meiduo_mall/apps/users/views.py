@@ -5,7 +5,7 @@ import re
 
 from meiduo_mall.utils.email import generate_verify_url,decode_token
 from meiduo_mall.utils.response_code import RET
-from .models import User
+from .models import User,Address
 from django_redis import get_redis_connection
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -215,3 +215,46 @@ class EmailView(MyLoginRequiredview):
 class UserAddressView(View):
     def get(self,request):
         return render(request,'user_center_site.html')
+
+#9,新增地址
+class UserAddressCreateView(MyLoginRequiredview):
+    def post(self,request):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        title = dict_data.get("title")
+        receiver = dict_data.get("receiver")
+        province_id = dict_data.get("province_id")
+        city_id = dict_data.get("city_id")
+        district_id = dict_data.get("district_id")
+        place = dict_data.get("place")
+        mobile = dict_data.get("mobile")
+        tel = dict_data.get("tel")
+        email = dict_data.get("email")
+
+        #2,校验参数,为空校验
+        if not all([title,receiver,province_id,city_id,district_id,place,mobile,tel,email]):
+            return http.JsonResponse({"code":RET.PARAMERR,"errmsg":"参数不全"})
+
+        #3,数据入库
+        dict_data["user"] = request.user
+        address = Address.objects.create(**dict_data)
+
+        #4,数据拼接, 返回响应
+        context = {
+            "code":RET.OK,
+            "address":{
+                "title":address.title,
+                "receiver":address.receiver,
+                "province_id":address.province_id,
+                "city_id":address.city_id,
+                "district_id":address.district_id,
+                "place":address.place,
+                "mobile":address.mobile,
+                "tel":address.tel,
+                "email":address.email,
+                "province":address.province.name,
+                "city":address.city.name,
+                "district":address.district.name,
+            }
+        }
+        return http.JsonResponse(context)
