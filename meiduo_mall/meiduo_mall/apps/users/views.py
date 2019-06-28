@@ -212,9 +212,34 @@ class EmailView(MyLoginRequiredview):
         return redirect('/info')
 
 #8,渲染用户的收货地址
-class UserAddressView(View):
+class UserAddressView(MyLoginRequiredview):
     def get(self,request):
-        return render(request,'user_center_site.html')
+
+        #1,查询用户所有的地址
+        # Address.objects.filter(user_id=request.user.id,is_deleted=False).all()
+        addresses = request.user.addresses.filter(is_deleted=False)
+
+        #2,拼接数据
+        address_list = []
+        for address in addresses:
+            address_list.append({
+                "title": address.title,
+                "receiver": address.receiver,
+                "province_id": address.province_id,
+                "city_id": address.city_id,
+                "district_id": address.district_id,
+                "place": address.place,
+                "mobile": address.mobile,
+                "tel": address.tel,
+                "email": address.email,
+                "province": address.province.name,
+                "city": address.city.name,
+                "district": address.district.name,
+            })
+
+
+        #2,携带数据,渲染页面
+        return render(request,'user_center_site.html',context={"addresses":address_list})
 
 #9,新增地址
 class UserAddressCreateView(MyLoginRequiredview):
