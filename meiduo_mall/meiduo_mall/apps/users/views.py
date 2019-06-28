@@ -287,7 +287,7 @@ class UserAddressCreateView(MyLoginRequiredview):
         return http.JsonResponse(context)
 
 #10,修改地址
-class UserAddressUpdateView(View):
+class UserAddressUpdateView(MyLoginRequiredview):
     def put(self,request,addredd_id):
         #1,获取参数
         dict_data = json.loads(request.body.decode())
@@ -339,3 +339,15 @@ class UserAddressUpdateView(View):
             }
         }
         return http.JsonResponse(context)
+
+#11,设置用户的默认地址
+class UserAddressDefaultView(MyLoginRequiredview):
+    def put(self,request,addredd_id):
+        #1,设置用户默认地址
+        request.user.default_address_id = addredd_id
+
+        #2,入库
+        request.user.save()
+
+        #3,返回响应
+        return http.JsonResponse({"code":RET.OK})
