@@ -362,3 +362,24 @@ class UserAddressDefaultView(MyLoginRequiredview):
 
         #3,返回响应
         return http.JsonResponse({"code":RET.OK})
+
+#12,修改地址标题
+class UserAddressTitleView(View):
+    def put(self,request,address_id):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        title = dict_data.get("title")
+
+        #2,校验参数
+        if not title:
+            return http.JsonResponse({"code":RET.PARAMERR})
+
+        #3,数据入库
+        ret = Address.objects.filter(id=address_id).update(title=title)
+        print(ret)#update方法,返回的是影响的行数,返回0表示没有修改成功
+        # address = Address.objects.get(id=address_id)
+        # address.title = title
+        # address.save()
+
+        #4,返回响应
+        return http.JsonResponse({"code":RET.OK})
