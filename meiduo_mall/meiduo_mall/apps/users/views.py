@@ -223,6 +223,7 @@ class UserAddressView(MyLoginRequiredview):
         address_list = []
         for address in addresses:
             address_list.append({
+                "id":address.id,
                 "title": address.title,
                 "receiver": address.receiver,
                 "province_id": address.province_id,
@@ -268,6 +269,61 @@ class UserAddressCreateView(MyLoginRequiredview):
         context = {
             "code":RET.OK,
             "address":{
+                "id":address.id,
+                "title":address.title,
+                "receiver":address.receiver,
+                "province_id":address.province_id,
+                "city_id":address.city_id,
+                "district_id":address.district_id,
+                "place":address.place,
+                "mobile":address.mobile,
+                "tel":address.tel,
+                "email":address.email,
+                "province":address.province.name,
+                "city":address.city.name,
+                "district":address.district.name,
+            }
+        }
+        return http.JsonResponse(context)
+
+#10,修改地址
+class UserAddressUpdateView(View):
+    def put(self,request,addredd_id):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        title = dict_data.get("title")
+        receiver = dict_data.get("receiver")
+        province_id = dict_data.get("province_id")
+        city_id = dict_data.get("city_id")
+        district_id = dict_data.get("district_id")
+        place = dict_data.get("place")
+        mobile = dict_data.get("mobile")
+        tel = dict_data.get("tel")
+        email = dict_data.get("email")
+
+        #2,校验参数
+        if not all([title,receiver,province_id,city_id,district_id,place,mobile,tel,email]):
+            return http.JsonResponse({"code":RET.PARAMERR,"errmsg":"参数不全"})
+
+        #3,数据入库
+        # Address.objects.filter(id=addredd_id).update(**dict_data)
+        address = Address.objects.get(id=addredd_id)
+        address.title = title
+        address.receiver = receiver
+        address.province_id = province_id
+        address.city_id = city_id
+        address.district_id = district_id
+        address.place = place
+        address.mobile = mobile
+        address.tel = tel
+        address.email = email
+        address.save()
+
+        #4,返回响应
+        context = {
+            "code":RET.OK,
+            "address":{
+                "id":address.id,
                 "title":address.title,
                 "receiver":address.receiver,
                 "province_id":address.province_id,

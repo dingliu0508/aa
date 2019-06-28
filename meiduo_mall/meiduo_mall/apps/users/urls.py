@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^emails/verification/$',views.EmailView.as_view()),
     url(r'^addresses/$',views.UserAddressView.as_view()),
     url(r'^addresses/create/$',views.UserAddressCreateView.as_view()),
+    url(r'^addresses/(?P<addredd_id>\d+)/$',views.UserAddressUpdateView.as_view())
 ]
