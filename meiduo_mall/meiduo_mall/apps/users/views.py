@@ -71,7 +71,8 @@ class UserRegiserView(View):
         User.objects.create_user(username=user_name,password=pwd,mobile=phone)
 
         #4,返回响应
-        return redirect('http://www.taobao.com')
+        # return redirect('http://www.taobao.com')
+        return redirect('/login')
 
 #2,检查用户名
 class CheckUsernameView(View):

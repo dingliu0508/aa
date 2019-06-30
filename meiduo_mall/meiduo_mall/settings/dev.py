@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig', #该导包方式,可以解决模型类不被admin关联的问题
     'oauth.apps.OauthConfig',
-    'areas.apps.AreasConfig'
+    'areas.apps.AreasConfig',
+    'contents.apps.ContentsConfig',
+    'goods.apps.GoodsConfig'
 ]
 
 MIDDLEWARE = [
