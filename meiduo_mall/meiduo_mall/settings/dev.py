@@ -233,5 +233,5 @@ EMAIL_FROM = '美多商城<jinghedeveloper@163.com>' # 发件人抬头
 EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
 
 #fdfs配置,图片前缀, 文件存储类
-BASE_URL = "http://172.16.12.134:8888/"
+BASE_URL = "http://image.meiduo.site:8888/"
 DEFAULT_FILE_STORAGE = "meiduo_mall.utils.fdfs.my_file_storage.MyStorage"
