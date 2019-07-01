@@ -219,11 +219,12 @@
 	<script>
         $(function () {
             $('#pagination').pagination({
-                currentPage: 1,
-                totalPage: 3,
+                currentPage: {{ current_page }},
+                totalPage: {{ total_page }},
                 callback:function (current) {
+                    {#alert("当前页 = " + current)#}
                     // location.href = '/list/115/1/?sort=default';
-                    {#// location.href = '/list/{{ category.id }}/' + current + '/?sort={{ sort }}';#}
+                    location.href = '/list/{{ category.id }}/' + current + '/?sort={{ sort }}';
                 }
             })
         });
