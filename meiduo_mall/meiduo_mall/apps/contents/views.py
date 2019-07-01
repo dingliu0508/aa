@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from goods.models import GoodsChannel
+from contents.models import ContentCategory
 
 #1,获取首页
 class IndexView(View):
@@ -35,9 +36,16 @@ class IndexView(View):
             for cat2 in sub_cats:
                 categories[group_id]["sub_cats"].append(cat2)
 
+        #4,获取手机分类广告数据
+        contents = {}
+        content_categories = ContentCategory.objects.order_by("id")
+        for content_category in content_categories:
+            contents[content_category.key] = content_category.content_set.order_by("sequence")
+
         #拼接数据,渲染页面
         context = {
-            "categories":categories
+            "categories":categories,
+            "contents":contents
         }
 
         return render(request,'index.html',context=context)
