@@ -232,5 +232,6 @@ EMAIL_FROM = '美多商城<jinghedeveloper@163.com>' # 发件人抬头
 #验证链接
 EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
 
-# from django.core.mail import send_mail
-# send_mail(subject='你好? 约吗?',message='今晚小树林',from_email='jinghedeveloper@163.com',recipient_list=['hejing@itcast.cn'])
+#fdfs配置,图片前缀, 文件存储类
+BASE_URL = "http://172.16.12.134:8888/"
+DEFAULT_FILE_STORAGE = "meiduo_mall.utils.fdfs.my_file_storage.MyStorage"
