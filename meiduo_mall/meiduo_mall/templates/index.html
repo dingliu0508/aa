@@ -96,38 +96,34 @@
 		<div class="next"></div>
 		<ul class="points">
 		</ul>
-		<ul class="sub_menu">			
-			<li>
-				<div class="level1">
-					<a href="http://shouji.jd.com/">手机</a><a href="#">运营商</a><a href="#">数码</a>
-				</div>
-				<div class="level2">
-					<div class="list_group">
-						<div class="group_name fl">手机通讯 &gt;</div>
-						<div class="group_detail fl">
-							<a href="/static/list.html">手机</a>
-							<a href="#">对讲机</a>
-							<a href="#">以旧换新</a>
-							<a href="#">手机维修</a>
-						</div>						
-					</div>
-					<div class="list_group">
-						<div class="group_name fl">运营商 &gt;</div>
-						<div class="group_detail fl">
-							<a href="#">合约机</a>
-							<a href="#">选号码</a>
-							<a href="#">固话宽带</a>
-							<a href="#">办套餐</a>
-							<a href="#">充话费/流量</a>
-							<a href="#">中国电信</a>
-							<a href="#">中国移动</a>
-							<a href="#">中国联通</a>
-							<a href="#">京东通信</a>
-							<a href="#">170选号</a>
-						</div>												
-					</div>
-				</div>
-			</li>
+
+        {# 1,分类 #}
+		<ul class="sub_menu">
+            {% for category in categories.values() %}
+                <li>
+                    <div class="level1">
+                        {% for channel in category.channels %}
+                            <a href="{{ channel.url }}">{{ channel.name }}</a>
+                        {% endfor %}
+                    </div>
+                    <div class="level2">
+                        {% for cat2 in category.sub_cats %}
+                             <div class="list_group">
+                                <div class="group_name fl">{{ cat2.name }} &gt;</div>
+
+                                <div class="group_detail fl">
+                                    {% for cat3 in cat2.subs.all() %}
+                                        <a href="/static/list.html">{{ cat3.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </li>
+            {% endfor %}
+
+
+            {#
 			<li>
 				<div class="level1">
 					<a href="#">电脑</a><a href="#">办公</a>
@@ -272,6 +268,7 @@
 					</div>
 				</div>
 			</li>
+             #}
 		</ul>
 
 		<div class="news">
