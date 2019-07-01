@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from meiduo_mall.utils.my_category import get_categories
-from .models import SKU
+from .models import SKU,GoodsCategory
 
 #1,获取商品sku列表页面
 class SKUListView(View):
@@ -13,9 +13,13 @@ class SKUListView(View):
         #2,查询sku数据
         skus = SKU.objects.filter(category_id=category_id).order_by("id")
 
+        #3,获取分类对象
+        category = GoodsCategory.objects.get(id=category_id)
+
         #拼接数据返回响应
         context = {
             "categories":categories,
-            "skus":skus
+            "skus":skus,
+            "category":category
         }
         return render(request,'list.html',context=context)
