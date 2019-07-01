@@ -8,11 +8,20 @@ from django.core.paginator import Paginator
 class SKUListView(View):
     def get(self,request,category_id,page_num):
 
-        #1,获取分类信息
+        #1,获取分类信息,和过滤参数
         categories= get_categories()
+        sort_field = request.GET.get("sort","default")
+
+        #1,1 判断排序的字段
+        if sort_field == "price":
+            sort = "-price"
+        elif sort_field == "hot":
+            sort = "-sales"
+        else:
+            sort = "-create_time"
 
         #2,查询sku数据
-        skus = SKU.objects.filter(category_id=category_id).order_by("id")
+        skus = SKU.objects.filter(category_id=category_id).order_by(sort)
 
         #3,分页处理
         paginate = Paginator(object_list=skus,per_page=5)
@@ -30,6 +39,7 @@ class SKUListView(View):
             "skus":skus_list,
             "category":category,
             "current_page":current_page,
-            "total_page":total_page
+            "total_page":total_page,
+            "sort":sort_field
         }
         return render(request,'list.html',context=context)
