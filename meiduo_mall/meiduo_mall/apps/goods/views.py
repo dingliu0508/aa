@@ -64,3 +64,22 @@ class SKUHotListView(View):
         #3,拼接数据,返回响应
 
         return http.JsonResponse({"hot_sku_list":sku_list})
+
+#3,商品sku详情
+class SKUDetailView(View):
+    def get(self,request,sku_id):
+
+        #1,获取分类
+        categories = get_categories()
+
+        #2,获取面包屑
+        category = SKU.objects.get(id=sku_id).category
+        # category = sku.category
+
+        #拼接数据,渲染页面
+        context = {
+            "categories":categories,
+            "category":category
+        }
+
+        return render(request,'detail.html',context=context)

@@ -148,8 +148,8 @@
                 {# 遍历获取sku数据 #}
                 {% for sku in skus %}
                     <li>
-                        <a href="/static/detail.html"><img src="{{ sku.default_image_url.url }}"></a>
-                        <h4><a href="/static/detail.html">{{ sku.name }}</a></h4>
+                        <a href="/detail/{{ sku.id }}"><img src="{{ sku.default_image_url.url }}"></a>
+                        <h4><a href="/detail/{{ sku.id }}">{{ sku.name }}</a></h4>
                         <div class="operate">
                             <span class="price">￥{{ sku.price }}</span>
                             <span class="unit">销量 {{ sku.sales }} 台</span>
