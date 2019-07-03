@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'oauth.apps.OauthConfig',
     'areas.apps.AreasConfig',
     'contents.apps.ContentsConfig',
-    'goods.apps.GoodsConfig'
+    'goods.apps.GoodsConfig',
+    'haystack', # 全文检索
 ]
 
 MIDDLEWARE = [
@@ -235,3 +236,12 @@ EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
 #fdfs配置,图片前缀, 文件存储类
 BASE_URL = "http://image.meiduo.site:8888/"
 DEFAULT_FILE_STORAGE = "meiduo_mall.utils.fdfs.my_file_storage.MyStorage"
+
+#haystack配置
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
+        'URL': 'http://172.16.12.134:9200/',
+        'INDEX_NAME': 'meiduo',
+    },
+}

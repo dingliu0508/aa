@@ -3,6 +3,7 @@ from django.views import View
 from meiduo_mall.utils.my_category import get_categories
 from .models import SKU,GoodsCategory
 from django.core.paginator import Paginator
+from django import http
 
 #1,获取商品sku列表页面
 class SKUListView(View):
@@ -43,3 +44,23 @@ class SKUListView(View):
             "sort":sort_field
         }
         return render(request,'list.html',context=context)
+
+#2,获取热销商品
+class SKUHotListView(View):
+    def get(self,request,category_id):
+        #1,根据销量查询两条数据
+        skus = SKU.objects.filter(category_id=category_id).order_by("-sales")[:2]
+
+        #2,数据转换
+        sku_list = []
+        for sku in skus:
+            sku_list.append({
+                "id":sku.id,
+                "default_image_url":sku.default_image_url.url,
+                "name":sku.name,
+                "price":sku.price
+            })
+
+        #3,拼接数据,返回响应
+
+        return http.JsonResponse({"hot_sku_list":sku_list})
