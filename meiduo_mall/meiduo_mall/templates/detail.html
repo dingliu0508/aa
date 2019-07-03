@@ -117,13 +117,13 @@
 	</div>
 
 	<div class="goods_detail_con clearfix">
-		<div class="goods_detail_pic fl"><img src="/static/images/goods_450.jpg"></div>
+		<div class="goods_detail_pic fl"><img src="{{ sku.default_image_url.url }}"></div>
 		<div class="goods_detail_list fr">
-			<h3>Apple MacBook Pro 13.3英寸笔记本 银色</h3>
-			<p>【全新2017款】MacBook Pro,一身才华，一触，即发 了解【黑五返场特惠】 更多产品请点击【美多官方Apple旗舰店】</p>
+			<h3>{{ sku.name }}</h3>
+			<p>{{ sku.caption }}</p>
 			<div class="price_bar">
-				<span class="show_pirce">¥<em>11388.00</em></span>
-				<a href="javascript:;" class="goods_judge">449人评价</a>
+				<span class="show_pirce">¥<em>{{ sku.price }}</em></span>
+				<a href="javascript:;" class="goods_judge">{{ sku.comments }}人评价</a>
 			</div>
 			<div class="goods_num clearfix">
 				<div class="num_name fl">数 量：</div>
@@ -149,7 +149,7 @@
 				<a href="javascript:;">core i5/8G内存/128G存储</a>
 				<a href="javascript:;">core i5/8G内存/512G存储/Multi-Touch Bar</a>
 			</div>
-			<div class="total">总价：<em>11388.00元</em></div>
+			<div class="total">总价：<em>[[sku_amount]]元</em></div>
 			<div class="operate_btn">
 				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
 			</div>
@@ -232,7 +232,7 @@
 	</div>
 	</div>
 	<script>
-        var price = "";
+        var price = "{{ sku.price }}";
         var category_id = "";
         var sku_id = "";
     </script>

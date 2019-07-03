@@ -76,10 +76,14 @@ class SKUDetailView(View):
         category = SKU.objects.get(id=sku_id).category
         # category = sku.category
 
+        #3,获取sku对象
+        sku = SKU.objects.get(id=sku_id)
+
         #拼接数据,渲染页面
         context = {
             "categories":categories,
-            "category":category
+            "category":category,
+            "sku":sku
         }
 
         return render(request,'detail.html',context=context)
