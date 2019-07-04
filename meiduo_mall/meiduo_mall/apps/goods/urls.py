@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^hot/(?P<category_id>\d+)/$',views.SKUHotListView.as_view()),
     url(r'^detail/(?P<sku_id>\d+)/$',views.SKUDetailView.as_view()),
     url(r'^detail/visit/(?P<category_id>\d+)/$',views.SKUCategoryVisitCountView.as_view()),
+    url(r'^browse_histories/$',views.UserBrowseHistoryView.as_view()),
 ]

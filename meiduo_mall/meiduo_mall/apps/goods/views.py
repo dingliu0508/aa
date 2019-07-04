@@ -7,6 +7,9 @@ from django.core.paginator import Paginator
 from django import http
 import time
 from datetime import datetime
+import json
+from django_redis import get_redis_connection
+from meiduo_mall.utils.login_required import MyLoginRequiredview
 
 #1,获取商品sku列表页面
 class SKUListView(View):
@@ -151,3 +154,29 @@ class SKUCategoryVisitCountView(View):
 
         #4,返回响应
         return http.JsonResponse({"code":RET.OK,"errmsg":"统计成功"})
+
+#5, 保存用户浏览历史记录
+class UserBrowseHistoryView(MyLoginRequiredview):
+    def post(self,request):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        sku_id = dict_data.get("sku_id")
+        user_id = request.user.id
+
+        #2,校验参数
+        if not sku_id:
+            return http.JsonResponse({"errmsg":"参数不全"},status=400)
+
+        #3,数据入库
+        #3,1 去重
+        redis_conn = get_redis_connection("history")
+        redis_conn.lrem("history_%s"%user_id,0,sku_id)
+
+        #3,2 储存
+        redis_conn.lpush("history_%s"%user_id,sku_id)
+
+        #3,3 截取,只保留5个
+        redis_conn.ltrim("history_%s"%user_id,0,4)
+
+        #4,返回响应
+        return http.JsonResponse({"code":RET.OK,"errmsg":"保存成功"})
