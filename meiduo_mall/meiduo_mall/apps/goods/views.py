@@ -180,3 +180,24 @@ class UserBrowseHistoryView(MyLoginRequiredview):
 
         #4,返回响应
         return http.JsonResponse({"code":RET.OK,"errmsg":"保存成功"})
+
+    def get(self,request):
+        #1,获取redis中当前用户所有的历史
+        redis_conn = get_redis_connection("history")
+        sku_ids = redis_conn.lrange("history_%s"%request.user.id,0,4)
+
+        #2,遍历所有商品的编号,取出商品对象
+        sku_list = []
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(id=sku_id)
+            sku_dict = {
+                "id":sku.id,
+                "default_image_url":sku.default_image_url.url,
+                "name":sku.name,
+                "price":sku.price,
+                "sales":sku.sales
+            }
+            sku_list.append(sku_dict)
+
+        #3,返回响应
+        return http.JsonResponse({"skus":sku_list})
