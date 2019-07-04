@@ -4,6 +4,7 @@ import json
 from django import http
 from goods.models import SKU
 from meiduo_mall.utils.response_code import RET
+from django_redis import get_redis_connection
 
 #1,添加购物车
 class CartView(View):
@@ -38,7 +39,18 @@ class CartView(View):
         #3,数据入库
         user = request.user
         if user.is_authenticated:
-            pass
+            #3,1,获取redis对象
+            redis_conn = get_redis_connection("cart")
+
+            #3,2 添加数据到购物车
+            redis_conn.hincrby("cart_%s"%user.id,sku_id,count)
+
+            #3,3 判断选中状态
+            if selected:
+                redis_conn.sadd("selected_%s"%user.id,sku_id)
+
+            #3,4 返回响应
+            return http.JsonResponse({"code":RET.OK})
         else:
             pass
 
