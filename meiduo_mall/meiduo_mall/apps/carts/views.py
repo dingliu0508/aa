@@ -5,6 +5,8 @@ from django import http
 from goods.models import SKU
 from meiduo_mall.utils.response_code import RET
 from django_redis import get_redis_connection
+import pickle
+import base64
 
 #1,添加购物车
 class CartView(View):
@@ -52,7 +54,26 @@ class CartView(View):
             #3,4 返回响应
             return http.JsonResponse({"code":RET.OK})
         else:
-            pass
+            #4,1获取cookie购物车数据
+            cookie_cart = request.COOKIES.get("cart")
 
-        #4,返回响应
-        pass
+            #4,2 转换成字典
+            cookie_cart_dict = {}
+            if cookie_cart:
+                cookie_cart_dict = pickle.loads(base64.b64decode(cookie_cart.encode()))
+
+            #4,3 添加数据到字典中,需要判断原来的数量
+            if sku_id in cookie_cart_dict:
+                old_count = cookie_cart_dict[sku_id]["count"]
+                count += old_count
+
+            cookie_cart_dict[sku_id] = {
+                "count":count,
+                "selected":selected
+            }
+
+            #4,4 将字典转成字符串,返回
+            cookie_cart = base64.b64encode(pickle.dumps(cookie_cart_dict)).decode()
+            response = http.JsonResponse({"code": RET.OK})
+            response.set_cookie("cart",cookie_cart)
+            return response
