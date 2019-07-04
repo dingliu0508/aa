@@ -3,11 +3,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<title>美多商城-购物车</title>
-	<link rel="stylesheet" type="text/css" href="css/reset.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-    <script type="text/javascript" src="js/host.js"></script>
-	<script type="text/javascript" src="js/vue-2.5.16.js"></script>
-    <script type="text/javascript" src="js/axios-0.18.0.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script type="text/javascript" src="/static/js/host.js"></script>
+	<script type="text/javascript" src="/static/js/vue-2.5.16.js"></script>
+    <script type="text/javascript" src="/static/js/axios-0.18.0.min.js"></script>
 </head>
 <body>
 	<div id="app" v-cloak>
@@ -19,24 +19,24 @@
 					欢迎您：<em>张 山</em>
 				</div>
 				<div class="login_btn fl">
-					<a href="../templates/login.html">登录</a>
+					<a href="login.html">登录</a>
 					<span>|</span>
-					<a href="../templates/register.html">注册</a>
+					<a href="register.html">注册</a>
 				</div>
 				<div class="user_link fl">
 					<span>|</span>
-					<a href="../templates/user_center_info.html">用户中心</a>
+					<a href="user_center_info.html">用户中心</a>
 					<span>|</span>
 					<a href="cart.html">我的购物车</a>
 					<span>|</span>
-					<a href="user_center_order.html">我的订单</a>
+					<a href="/static/user_center_order.html">我的订单</a>
 				</div>
 			</div>
 		</div>		
 	</div>
 
 	<div class="search_bar clearfix">
-		<a href="../templates/index.html" class="logo fl"><img src="images/logo.png"></a>
+		<a href="index.html" class="logo fl"><img src="/static/images/logo.png"></a>
 		<div class="search_wrap fl">
 			<form method="get" action="/search/" class="search_con">
                 <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
@@ -62,7 +62,7 @@
 	</ul>
 	<ul class="cart_list_td clearfix">
 		<li class="col01"><input type="checkbox" name="selected" checked></li>
-		<li class="col02"><img src="images/goods/goods001.jpg"></li>
+		<li class="col02"><img src="/static/images/goods/goods001.jpg"></li>
 		<li class="col03">华为 HUAWEI P10 Plus 6GB+64GB 钻雕金 移动联通电信4G手机 双卡双待</li>
 		<li class="col04">台</li>
 		<li class="col05">25.80元</li>
@@ -79,7 +79,7 @@
 
 	<ul class="cart_list_td clearfix">
 		<li class="col01"><input type="checkbox" name="selected" checked></li>
-		<li class="col02"><img src="images/goods/goods002.jpg"></li>
+		<li class="col02"><img src="/static/images/goods/goods002.jpg"></li>
 		<li class="col03">Apple iPhoneX 64GB 深空灰色 移动联通电信4G手机</li>
 		<li class="col04">台</li>
 		<li class="col05">16.80元</li>
@@ -97,7 +97,7 @@
 		<li class="col01"><input type="checkbox" name="selected_all" checked=""></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
-		<li class="col04"><a href="place_order.html">去结算</a></li>
+		<li class="col04"><a href="/static/place_order.html">去结算</a></li>
 	</ul>
 	<div class="footer">
 		<div class="foot_link">
@@ -116,7 +116,7 @@
 	<script>
         var cart_skus = [];
     </script>
-    <script type="text/javascript" src="js/common.js"></script>
-	<script type="text/javascript" src="js/cart.js"></script>
+    <script type="text/javascript" src="/static/js/common.js"></script>
+	<script type="text/javascript" src="/static/js/cart.js"></script>
 </body>
 </html>

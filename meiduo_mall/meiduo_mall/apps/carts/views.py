@@ -77,3 +77,6 @@ class CartView(View):
             response = http.JsonResponse({"code": RET.OK})
             response.set_cookie("cart",cookie_cart)
             return response
+
+    def get(self,request):
+        return render(request,'cart.html')
