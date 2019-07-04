@@ -169,7 +169,7 @@ class GoodCategoryVisit(models.Model):
 
     #1,关联的哪个分类
     category = models.ForeignKey(GoodsCategory,related_name="visit_counts",verbose_name="商品分类")
-    date = models.DateTimeField(auto_now_add=True,verbose_name="访问日期")
+    date = models.DateField(auto_now_add=True,verbose_name="访问日期")
     count = models.IntegerField(default=0,verbose_name="访问量")
 
     class Meta:

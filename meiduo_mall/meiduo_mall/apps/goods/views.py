@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.views import View
 from meiduo_mall.utils.my_category import get_categories
-from .models import SKU,GoodsCategory
+from meiduo_mall.utils.response_code import RET
+from .models import SKU,GoodsCategory,GoodCategoryVisit
 from django.core.paginator import Paginator
 from django import http
+import time
+from datetime import datetime
 
 #1,获取商品sku列表页面
 class SKUListView(View):
@@ -123,3 +126,28 @@ class SKUDetailView(View):
         }
 
         return render(request,'detail.html',context=context)
+
+#4,统计商品分类访问量
+class SKUCategoryVisitCountView(View):
+    def post(self,request,category_id):
+
+        #1,取出分类
+        category = GoodsCategory.objects.get(id=category_id)
+
+        #2, 查询该分类当天的方法量
+        t = time.localtime()
+        current_str = "%d-%02d-%02d"%(t.tm_year,t.tm_mon,t.tm_mday)
+        current_date = datetime.strptime(current_str,"%Y-%m-%d")
+        try:
+            visit_count = category.visit_counts.get(date=current_date)
+        except Exception as e:
+            visit_count = GoodCategoryVisit()
+
+        #3,重新赋值,入库
+        visit_count.count += 1
+        visit_count.date = current_date
+        visit_count.category_id = category_id
+        visit_count.save()
+
+        #4,返回响应
+        return http.JsonResponse({"code":RET.OK,"errmsg":"统计成功"})
