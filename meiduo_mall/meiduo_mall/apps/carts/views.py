@@ -315,3 +315,32 @@ class CartsAllSelectView(View):
             cookie_cart = base64.b64encode(pickle.dumps(cookie_cart_dict)).decode()
             response.set_cookie("cart",cookie_cart)
             return response
+
+#3,购物车简要信息
+class CartsSimpleView(View):
+    def get(self,request):
+        #1,获取用户
+        user = request.user
+
+        #2,判断用户登陆状态
+        if user.is_authenticated:
+            #2,1 获取redis数据
+            redis_conn = get_redis_connection("cart")
+            cart_dict = redis_conn.hgetall("cart_%s"%user.id)
+
+            #2,2 拼接数据
+            sku_list = []
+            for sku_id,count in cart_dict.items():
+                sku = SKU.objects.get(id=sku_id)
+                sku_dict = {
+                    "id":sku.id,
+                    "default_image_url":sku.default_image_url.url,
+                    "name":sku.name,
+                    "count":int(count)
+                }
+                sku_list.append(sku_dict)
+
+            #2,3 返回响应
+            return http.JsonResponse({"cart_skus":sku_list})
+        else:
+            pass
