@@ -8,6 +8,7 @@ from django.contrib.auth import login,authenticate
 from .utils import encode_openid,decode_openid
 from django_redis import get_redis_connection
 from users.models import User
+from carts.utils import merge_cookie_redis_cart
 
 #1,获取qq登陆界面
 class QQLoginView(View):
@@ -71,6 +72,7 @@ class QQAuthUserView(View):
             #6,3 返回响应
             response = redirect("/")
             response.set_cookie("username",user.username)
+            response = merge_cookie_redis_cart(request,response,user)
             return response
 
     def post(self,request):
@@ -119,6 +121,7 @@ class QQAuthUserView(View):
             login(request,user)
             response = redirect('/')
             response.set_cookie("username",user.username)
+            response = merge_cookie_redis_cart(request, response, user)
             return response
         else:
             #4,1 创建美多用户
@@ -136,4 +139,5 @@ class QQAuthUserView(View):
             login(request,user)
             response = redirect('/')
             response.set_cookie("username",user.username)
+            response = merge_cookie_redis_cart(request, response, user)
             return response
