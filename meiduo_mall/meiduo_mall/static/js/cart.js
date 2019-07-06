@@ -9,6 +9,7 @@ var vm = new Vue({
         total_selected_count: 0,
         total_selected_amount: 0,
         carts_tmp: [],
+        // cart_skus:cart_skus
     },
     computed: {
         selected_all(){

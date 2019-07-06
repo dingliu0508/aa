@@ -79,4 +79,35 @@ class CartView(View):
             return response
 
     def get(self,request):
-        return render(request,'cart.html')
+
+        #1,取出用户对象
+        user = request.user
+
+        #2,判断用户登陆状态
+        if user.is_authenticated:
+            #2,1 获取redis中的购物车数据
+            redis_conn = get_redis_connection("cart")
+            cart_dict = redis_conn.hgetall("cart_%s"%user.id)
+            selected_list = redis_conn.smembers("selected_%s"%user.id)
+
+            #2,2 拼接数据
+            sku_list = []
+            for sku_id,count in cart_dict.items():
+                sku = SKU.objects.get(id=sku_id)
+                sku_dict = {
+                    "id":sku.id,
+                    "default_image_url":sku.default_image_url.url,
+                    "name": sku.name,
+                    "price":str(sku.price),
+                    "count":int(count),
+                    "selected":str(sku_id in selected_list),
+                    "amount":str(sku.price * int(count))
+                }
+                sku_list.append(sku_dict)
+
+
+            #2,3 返回响应
+            return render(request, 'cart.html',context={"sku_list":sku_list})
+        else:
+
+            return render(request,'cart.html')
