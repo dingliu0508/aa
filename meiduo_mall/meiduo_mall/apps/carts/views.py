@@ -249,4 +249,20 @@ class CartView(View):
             #3,2,返回响应
             return http.JsonResponse({"code":RET.OK})
         else:
-            pass
+            #4,1 获取cookie数据
+            cookie_cart = request.COOKIES.get("cart")
+
+            #4,2 数据转换
+            cookie_cart_dict = {}
+            if cookie_cart:
+                cookie_cart_dict = pickle.loads(base64.b64decode(cookie_cart.encode()))
+
+            #4,3 删除数据
+            if sku_id in cookie_cart_dict:
+                del cookie_cart_dict[sku_id]
+
+            #4,4 设置cookie数据,返回响应
+            response = http.JsonResponse({"code": RET.OK})
+            cookie_cart = base64.b64encode(pickle.dumps(cookie_cart_dict)).decode()
+            response.set_cookie("cart",cookie_cart)
+            return response
