@@ -221,3 +221,32 @@ class CartView(View):
             cookie_cart = base64.b64encode(pickle.dumps(cookie_cart_dict)).decode()
             response.set_cookie("cart",cookie_cart)
             return response
+
+    def delete(self,request):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        sku_id = dict_data.get("sku_id")
+
+        #2,校验参数
+        #2,1 为空校验
+        if not sku_id:
+            return http.JsonResponse({"code":RET.PARAMERR,"errmsg":"参数不全"},status=400)
+
+        #2,2 判断sku对象是否存在
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except Exception as e:
+            return http.JsonResponse({"code": RET.PARAMERR, "errmsg": "商品不存在"}, status=400)
+
+        #3,数据入库(删除)
+        user = request.user
+        if user.is_authenticated:
+            #3,1 删除redis数据
+            redis_conn = get_redis_connection("cart")
+            redis_conn.hdel("cart_%s"%user.id,sku_id)
+            redis_conn.srem("selected_%s"%user.id,sku_id)
+
+            #3,2,返回响应
+            return http.JsonResponse({"code":RET.OK})
+        else:
+            pass
