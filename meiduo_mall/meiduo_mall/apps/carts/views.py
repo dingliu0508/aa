@@ -298,4 +298,20 @@ class CartsAllSelectView(View):
             #3,3返回响应
             return http.JsonResponse({"code":RET.OK})
         else:
-            pass
+            #4,1 获取参数
+            cookie_cart = request.COOKIES.get("cart")
+
+            #4,2 数据转换
+            cookie_cart_dict = {}
+            if cookie_cart:
+                cookie_cart_dict = pickle.loads(base64.b64decode(cookie_cart.encode()))
+
+            #4,3 修改数据
+            for sku_id,selected_count in cookie_cart_dict.items():
+                selected_count["selected"] = selected
+
+            #4,4 转换数据,返回响应
+            response = http.JsonResponse({"code": RET.OK})
+            cookie_cart = base64.b64encode(pickle.dumps(cookie_cart_dict)).decode()
+            response.set_cookie("cart",cookie_cart)
+            return response
