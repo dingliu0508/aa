@@ -134,3 +134,40 @@ class CartView(View):
 
             #3,4 返回响应
             return render(request, 'cart.html', context={"sku_list": sku_list})
+
+    def put(self,request):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        sku_id = dict_data.get("sku_id")
+        count = dict_data.get("count")
+        selected = dict_data.get("selected",True)
+
+        #2,校验参数
+        #2,1 为空校验
+        if not all([sku_id,count]):
+            return http.JsonResponse({"code":RET.PARAMERR,"errmsg":"参数不全"},status=400)
+
+        #2,2 商品是否存在
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except Exception:
+            return http.JsonResponse({"code": RET.NODATA, "errmsg": "商品不存在"}, status=400)
+
+        #2,3 将count转成整数
+        try:
+            count = int(count)
+        except Exception as e:
+            return http.JsonResponse({"code": RET.NODATA, "errmsg": "参数有误"}, status=400)
+
+
+        #2,4 数量是否充足
+        if count > sku.stock:
+            return http.JsonResponse({"code": RET.NODATA, "errmsg": "库存不足"}, status=400)
+
+        #3,数据入库
+        user = request.user
+        if user.is_authenticated:
+            pass
+        else:
+            #4,返回响应
+            pass
