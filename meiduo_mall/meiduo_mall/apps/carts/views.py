@@ -343,4 +343,25 @@ class CartsSimpleView(View):
             #2,3 返回响应
             return http.JsonResponse({"cart_skus":sku_list})
         else:
-            pass
+            #3,1 获取cookie数据
+            cookie_cart = request.COOKIES.get("cart")
+
+            #3,2 数据转换
+            cookie_cart_dict = {}
+            if cookie_cart:
+                cookie_cart_dict = pickle.loads(base64.b64decode(cookie_cart.encode()))
+
+            #3,3 数据拼接
+            sku_list = []
+            for sku_id,seleted_count in cookie_cart_dict.items():
+                sku = SKU.objects.get(id=sku_id)
+                sku_dict = {
+                    "id":sku.id,
+                    "default_image_url":sku.default_image_url.url,
+                    "name":sku.name,
+                    "count":int(seleted_count["count"])
+                }
+                sku_list.append(sku_dict)
+
+            #4,4 返回响应
+            return http.JsonResponse({"cart_skus": sku_list})
