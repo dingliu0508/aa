@@ -266,3 +266,36 @@ class CartView(View):
             cookie_cart = base64.b64encode(pickle.dumps(cookie_cart_dict)).decode()
             response.set_cookie("cart",cookie_cart)
             return response
+
+#2,全选
+class CartsAllSelectView(View):
+    def put(self,request):
+        #1,获取参数
+        dict_data = json.loads(request.body.decode())
+        selected = dict_data.get("selected")
+
+        #2,校验参数
+        try:
+            selected = bool(selected)
+        except Exception as e:
+            return http.JsonResponse(status=400)
+
+        #3,数据入库
+        user = request.user
+        if user.is_authenticated:
+            #3,1获取redis
+            redis_conn = get_redis_connection("cart")
+
+            #3,2修改数据
+            cart_dict = redis_conn.hgetall("cart_%s"%user.id)
+            sku_ids = cart_dict.keys()
+
+            if selected:
+                redis_conn.sadd("selected_%s"%user.id,*sku_ids)
+            else:
+                redis_conn.srem("selected_%s" % user.id, *sku_ids)
+
+            #3,3返回响应
+            return http.JsonResponse({"code":RET.OK})
+        else:
+            pass
