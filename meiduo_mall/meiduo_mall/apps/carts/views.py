@@ -109,5 +109,28 @@ class CartView(View):
             #2,3 返回响应
             return render(request, 'cart.html',context={"sku_list":sku_list})
         else:
+            #3,1 获取cookie数据
+            cookie_cart = request.COOKIES.get("cart")
 
-            return render(request,'cart.html')
+            #3,2 数据转换
+            cookie_cart_dict = {}
+            if cookie_cart:
+                cookie_cart_dict = pickle.loads(base64.b64decode(cookie_cart.encode()))
+
+            #3,3 数据拼接
+            sku_list = []
+            for sku_id,selected_count in cookie_cart_dict.items():
+                sku = SKU.objects.get(id=sku_id)
+                sku_dict = {
+                    "id": sku.id,
+                    "default_image_url": sku.default_image_url.url,
+                    "name": sku.name,
+                    "price": str(sku.price),
+                    "count": int(selected_count["count"]),
+                    "selected": str(selected_count["selected"]),
+                    "amount": str(sku.price * int(selected_count["count"]))
+                }
+                sku_list.append(sku_dict)
+
+            #3,4 返回响应
+            return render(request, 'cart.html', context={"sku_list": sku_list})
