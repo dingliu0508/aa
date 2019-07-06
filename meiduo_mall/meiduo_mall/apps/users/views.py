@@ -13,6 +13,7 @@ from meiduo_mall.utils.login_required import MyLoginRequiredview
 import json
 from django.core.mail import send_mail
 from django.conf import settings
+from carts.utils import merge_cookie_redis_cart
 
 #1,注册用户
 class UserRegiserView(View):
@@ -132,6 +133,7 @@ class UserLoginView(View):
         #4,返回响应
         response = redirect("/")
         response.set_cookie("username",user.username,max_age=3600*24*2)
+        response = merge_cookie_redis_cart(request,response,user)
         return response
 
 #5,退出用户
