@@ -167,7 +167,30 @@ class CartView(View):
         #3,数据入库
         user = request.user
         if user.is_authenticated:
-            pass
+            #3,1 获取redis对象
+            redis_conn = get_redis_connection("cart")
+
+            #3,2 设置数据
+            redis_conn.hset("cart_%s"%user.id,sku_id,count)
+
+            if selected:
+                redis_conn.sadd("selected_%s"%user.id,sku_id)
+            else:
+                redis_conn.srem("selected_%s" % user.id, sku_id)
+
+            #3,3 拼接数据
+            sku_dict = {
+                "id": sku.id,
+                "default_image_url": sku.default_image_url.url,
+                "name": sku.name,
+                "price": str(sku.price),
+                "count": int(count),
+                "selected": selected,
+                "amount": str(sku.price * int(count))
+            }
+
+            #3,4,返回响应
+            return http.JsonResponse({"code":RET.OK,"cart_sku":sku_dict})
         else:
             #4,返回响应
             pass
