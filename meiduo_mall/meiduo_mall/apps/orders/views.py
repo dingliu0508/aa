@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.views import View
+
+from meiduo_mall.utils.response_code import RET
 from users.models import Address
 from meiduo_mall.utils.login_required import MyLoginRequiredview
 from django_redis import get_redis_connection
@@ -7,7 +9,7 @@ from goods.models import SKU
 from decimal import Decimal
 import json
 from django import http
-from .models import OrderInfo
+from .models import OrderInfo,OrderGoods
 from django.utils import timezone
 import random
 
@@ -95,7 +97,7 @@ class OrderCommitView(MyLoginRequiredview):
             status =  OrderInfo.ORDER_STATUS_ENUM["UNPAID"] #待支付
 
         #3,3 创建订单信息对象,入库
-        OrderInfo.objects.create(
+        order_info = OrderInfo.objects.create(
             order_id=order_id,
             user=user,
             address=address,
@@ -106,5 +108,43 @@ class OrderCommitView(MyLoginRequiredview):
             status=status,
         )
 
-        #4,返回响应
-        pass
+        #3,4 获取要结算的商品,并入库
+        redis_conn = get_redis_connection("cart")
+        cart_dict = redis_conn.hgetall("cart_%s"%user.id)
+        selected_list = redis_conn.smembers("selected_%s"%user.id)
+
+        for sku_id in selected_list:
+            #4,1 获取商品,数量
+            sku = SKU.objects.get(id=sku_id)
+            count = int(cart_dict.get(sku_id))
+
+            #4,2 判断库存
+            if count > sku.stock:
+                return http.JsonResponse({"errmsg":"库存不足"})
+
+            #4,3 减少库存,增加销量
+            sku.stock -= count
+            sku.sales += count
+            sku.save()
+
+            #4,4 创建订单商品对象,入库
+            OrderGoods.objects.create(
+                order=order_info,
+                sku=sku,
+                count=count,
+                price=sku.price,
+            )
+
+            #4,5 累加数量,价格
+            order_info.total_count += count
+            order_info.total_amount += (count * sku.price)
+
+        #5,提交订单信息
+        order_info.save()
+
+        #6,清除redis数据
+        redis_conn.hdel("cart_%s"%user.id,*selected_list)
+        redis_conn.srem("selected_%s"%user.id,*selected_list)
+
+        #7,返回响应
+        return http.JsonResponse({"code":RET.OK,"order_id":order_id})
