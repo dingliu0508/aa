@@ -119,32 +119,60 @@ class OrderCommitView(MyLoginRequiredview):
         selected_list = redis_conn.smembers("selected_%s"%user.id)
 
         for sku_id in selected_list:
-            #4,1 获取商品,数量
-            sku = SKU.objects.get(id=sku_id)
-            count = int(cart_dict.get(sku_id))
+            while True:
+                #4,1 获取商品,数量
+                sku = SKU.objects.get(id=sku_id)
+                count = int(cart_dict.get(sku_id))
 
-            #4,2 判断库存
-            if count > sku.stock:
-                #TODO 回滚
-                transaction.savepoint_rollback(sid)
-                return http.JsonResponse({"errmsg":"库存不足"})
+                #4,2 判断库存
+                if count > sku.stock:
+                    #TODO 回滚
+                    transaction.savepoint_rollback(sid)
+                    return http.JsonResponse({"errmsg":"库存不足"})
 
-            #4,3 减少库存,增加销量
-            sku.stock -= count
-            sku.sales += count
-            sku.save()
+                #TODO 模拟并发下单
+                import time
+                time.sleep(5)
 
-            #4,4 创建订单商品对象,入库
-            OrderGoods.objects.create(
-                order=order_info,
-                sku=sku,
-                count=count,
-                price=sku.price,
-            )
 
-            #4,5 累加数量,价格
-            order_info.total_count += count
-            order_info.total_amount += (count * sku.price)
+                #4,3 减少库存,增加销量
+                # sku.stock -= count
+                # sku.sales += count
+                # sku.save()
+
+                #TODO 使用乐观锁解决并发下单
+                #4,3,1 准备数据新,老库存
+                old_stock = sku.stock
+                old_sales = sku.sales
+
+                new_stock = old_stock - count
+                new_sales = old_sales + count
+
+                #4,3,2 跟新数据
+                ret = SKU.objects.filter(id=sku_id,stock=old_stock).update(stock=new_stock,sales=new_sales)
+
+                #4,3,3 判断是否更新成功
+                if ret == 0:
+                    # transaction.savepoint_rollback(sid)
+                    # return http.JsonResponse({"errmsg":"下单失败"})
+                    continue
+
+
+                #4,4 创建订单商品对象,入库
+                OrderGoods.objects.create(
+                    order=order_info,
+                    sku=sku,
+                    count=count,
+                    price=sku.price,
+                )
+
+                #4,5 累加数量,价格
+                order_info.total_count += count
+                order_info.total_amount += (count * sku.price)
+
+                #一定要跳出
+                break;
+
 
         #5,提交订单信息
         order_info.save()
