@@ -12,6 +12,7 @@ from django import http
 from .models import OrderInfo,OrderGoods
 from django.utils import timezone
 import random
+from django.db import transaction
 
 #1,订单结算页
 class OrderSettlementView(MyLoginRequiredview):
@@ -64,6 +65,7 @@ class OrderSettlementView(MyLoginRequiredview):
 
 #2,订单提交
 class OrderCommitView(MyLoginRequiredview):
+    @transaction.atomic
     def post(self,request):
         #1,获取参数
         dict_data = json.loads(request.body.decode())
@@ -96,6 +98,9 @@ class OrderCommitView(MyLoginRequiredview):
         else:
             status =  OrderInfo.ORDER_STATUS_ENUM["UNPAID"] #待支付
 
+        #TODO 设置保存点
+        sid = transaction.savepoint()
+
         #3,3 创建订单信息对象,入库
         order_info = OrderInfo.objects.create(
             order_id=order_id,
@@ -120,6 +125,8 @@ class OrderCommitView(MyLoginRequiredview):
 
             #4,2 判断库存
             if count > sku.stock:
+                #TODO 回滚
+                transaction.savepoint_rollback(sid)
                 return http.JsonResponse({"errmsg":"库存不足"})
 
             #4,3 减少库存,增加销量
@@ -141,6 +148,7 @@ class OrderCommitView(MyLoginRequiredview):
 
         #5,提交订单信息
         order_info.save()
+        transaction.savepoint_commit(sid) #TODO 提交事务
 
         #6,清除redis数据
         redis_conn.hdel("cart_%s"%user.id,*selected_list)
