@@ -8,6 +8,8 @@ from decimal import Decimal
 import json
 from django import http
 from .models import OrderInfo
+from django.utils import timezone
+import random
 
 #1,订单结算页
 class OrderSettlementView(MyLoginRequiredview):
@@ -82,6 +84,27 @@ class OrderCommitView(MyLoginRequiredview):
             return http.JsonResponse(status=400)
 
         #3,数据入库
+        #3,1 订单编号
+        user = request.user
+        order_id = timezone.now().strftime("%Y%m%d%H%m%s") + "%06d%s"%(random.randint(0,999999),user.id)
+
+        #3,2 订单状态
+        if pay_method == OrderInfo.PAY_METHODS_ENUM["CASH"]:
+            status = OrderInfo.ORDER_STATUS_ENUM["UNSEND"] #货到付款
+        else:
+            status =  OrderInfo.ORDER_STATUS_ENUM["UNPAID"] #待支付
+
+        #3,3 创建订单信息对象,入库
+        OrderInfo.objects.create(
+            order_id=order_id,
+            user=user,
+            address=address,
+            total_count=0,
+            total_amount=Decimal(0.0),
+            freight=Decimal(10.0),
+            pay_method=pay_method,
+            status=status,
+        )
 
         #4,返回响应
         pass
