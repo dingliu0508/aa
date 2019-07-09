@@ -1,5 +1,5 @@
 from goods.models import GoodsChannel
-
+from goods.models import SKU
 
 def get_categories():
     # 1,定义字典
@@ -33,3 +33,8 @@ def get_categories():
 
     # 4,返回分类信息
     return categories
+
+
+def get_breadcrumb(sku_id):
+    sku = SKU.objects.get(id=sku_id)
+    return sku.category
