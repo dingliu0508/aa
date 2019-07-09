@@ -209,13 +209,17 @@ class OrderInfoView(MyLoginRequiredview):
         #1,获取用户订单
         orders = request.user.orderinfo_set.order_by("-create_time").all()
 
+        #1,1 添加支付方式,订单状态显示信息
+        for order in orders:
+            order.paymethod_name = OrderInfo.PAY_METHOD_CHOICES[order.pay_method-1][1]
+            order.status_name = OrderInfo.ORDER_STATUS_CHOICES[order.status-1][1]
+
         #2,对订单进行分页
         paginate = Paginator(object_list=orders,per_page=3)
         page = paginate.page(page_num)
         order_list = page.object_list
         current_page = page.number
         total_page = paginate.num_pages
-
 
         #2,拼接数据,渲染页面
         context = {
