@@ -206,4 +206,12 @@ class OrderSuccessView(View):
 #4,用户订单信息
 class OrderInfoView(MyLoginRequiredview):
     def get(self,request,page_num):
-        return render(request,'user_center_order.html')
+        #1,获取用户订单
+        # orders = OrderInfo.objects.filter(user_id=request.user.id).order_by("-create_time").all()
+        orders = request.user.orderinfo_set.order_by("-create_time").all()
+
+        #2,拼接数据,渲染页面
+        context = {
+            "orders":orders
+        }
+        return render(request,'user_center_order.html',context=context)
