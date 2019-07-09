@@ -5,4 +5,5 @@ urlpatterns = [
     url(r'^order/settlement/$',views.OrderSettlementView.as_view()),
     url(r'^orders/commit/$',views.OrderCommitView.as_view()),
     url(r'^orders/success/$',views.OrderSuccessView.as_view()),
+    url(r'^order/info/(?P<page_num>\d+)/$',views.OrderInfoView.as_view()),
 ]

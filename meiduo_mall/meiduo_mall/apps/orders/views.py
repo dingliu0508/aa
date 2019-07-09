@@ -202,3 +202,8 @@ class OrderSuccessView(View):
             "pay_method":pay_method
         }
         return render(request,'order_success.html',context=context)
+
+#4,用户订单信息
+class OrderInfoView(MyLoginRequiredview):
+    def get(self,request,page_num):
+        return render(request,'user_center_order.html')
