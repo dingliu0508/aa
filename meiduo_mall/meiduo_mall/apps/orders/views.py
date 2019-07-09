@@ -14,7 +14,7 @@ from .models import OrderInfo,OrderGoods
 from django.utils import timezone
 import random
 from django.db import transaction
-
+from django.core.paginator import Paginator
 #1,订单结算页
 class OrderSettlementView(MyLoginRequiredview):
     def get(self,request):
@@ -207,11 +207,20 @@ class OrderSuccessView(View):
 class OrderInfoView(MyLoginRequiredview):
     def get(self,request,page_num):
         #1,获取用户订单
-        # orders = OrderInfo.objects.filter(user_id=request.user.id).order_by("-create_time").all()
         orders = request.user.orderinfo_set.order_by("-create_time").all()
+
+        #2,对订单进行分页
+        paginate = Paginator(object_list=orders,per_page=3)
+        page = paginate.page(page_num)
+        order_list = page.object_list
+        current_page = page.number
+        total_page = paginate.num_pages
+
 
         #2,拼接数据,渲染页面
         context = {
-            "orders":orders
+            "orders":order_list,
+            "current_page":current_page,
+            "total_page":total_page
         }
         return render(request,'user_center_order.html',context=context)
