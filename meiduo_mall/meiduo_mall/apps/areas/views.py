@@ -4,7 +4,6 @@ from django import http
 from meiduo_mall.utils.response_code import RET
 from .models import Area
 from django.core.cache import cache
-
 #1,获取区域视图
 class AreaView(View):
     def get(self,request):

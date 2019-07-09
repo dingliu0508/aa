@@ -131,8 +131,8 @@ class OrderCommitView(MyLoginRequiredview):
                     return http.JsonResponse({"errmsg":"库存不足"})
 
                 #TODO 模拟并发下单
-                import time
-                time.sleep(5)
+                # import time
+                # time.sleep(5)
 
 
                 #4,3 减少库存,增加销量
@@ -184,3 +184,20 @@ class OrderCommitView(MyLoginRequiredview):
 
         #7,返回响应
         return http.JsonResponse({"code":RET.OK,"order_id":order_id})
+
+#3,订单成功
+class OrderSuccessView(View):
+    def get(self,request):
+
+        #1,获取参数
+        order_id = request.GET.get("order_id")
+        payment_amount = request.GET.get("payment_amount")
+        pay_method = request.GET.get("pay_method")
+
+        #2,拼接参数渲染页面
+        context = {
+            "order_id":order_id,
+            "payment_amount":payment_amount,
+            "pay_method":pay_method
+        }
+        return render(request,'order_success.html',context=context)
