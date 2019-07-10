@@ -91,12 +91,20 @@ WSGI_APPLICATION = 'meiduo_mall.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'meiduo13',
+        'NAME': 'python13',
         'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'mysql',
+        'HOST': '172.16.12.134',
         'PORT': '3306',
-    }
+    },
+    'slave': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'python13',
+        'USER': 'root',
+        'PASSWORD': 'mysql',
+        'HOST': '172.16.12.134',
+        'PORT': '8306',
+    },
 }
 
 
@@ -278,3 +286,6 @@ CRONJOBS = [
     #参数1: 每1分钟生成一次首页静态文件,  参数2:需要执行的代码   参数3: 日志信息
     ('*/1 * * * *', 'contents.crons.generate_static_index_html', '>> ' + os.path.join(os.path.dirname(BASE_DIR), 'logs/crontab.log'))
 ]
+
+#数据库路由配置
+DATABASE_ROUTERS = ['meiduo_mall.utils.db_routers.MasterSlaveDBRouter']
